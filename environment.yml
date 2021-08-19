@@ -1,0 +1,34 @@
+name: incseg
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3
+  - jupyter                         # necessary to run notebooks
+  - jupyterlab                      # necessary to run notebooks
+  - pandas >=1.0                    # generate markdown tables
+  - tabulate                        # generate markdown tables
+  - pandoc >=2.12                   # necessary to compile the paper
+  - pandoc-crossref >=0.3.10        # necessary to compile the paper
+  - tectonic                        # necessary to compile the paper
+  - watermark                       # add metadata to notebooks
+  - seaborn                         # requirement of stargazer and we want from conda not pip
+  - geosnap                         # NOTE: need current dev version of geosnap, this is just to install deps from conda
+  - segregation >=2.1
+  - hvplot
+  - ipython
+  - isort
+  - black
+  - gh
+  - streamlit
+  - streamlit-folium
+  - bokeh <=2.2
+  - pip
+  - pip:
+    - pandoc-include                 # necessary to compile the paper
+    - pandoc-latex-admonition        # necessary to compile the paper
+    - stargazer
+    - folium >=0.12
+
+    - git+https://github.com/martinfleis/geopandas-view.git
+    - git+https://github.com/knaaptime/geosnap.git@segdyn  # should get my segdyn branch, which has the new code
