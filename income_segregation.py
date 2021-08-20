@@ -12,6 +12,14 @@ from libpysal.weights import Queen
 from geosnap import datasets
 from geosnap.analyze import segdyn
 from segregation import singlegroup
+from geosnap import datasets
+from geosnap import io
+from geosnap._data import data_dir
+
+# get 
+if not os.path.exists(data_dir):
+    io.store_acs()
+
 
 msas = datasets.msa_definitions()
 bgs = datasets.acs(year=2018, level="bg")[["geoid", "geometry"]]

@@ -7,5 +7,7 @@ bokeh <=2.2
 folium >=0.12
 proplot
 botocore >=1.20.21
+s3fs
+fsspec >=0.8.3
 git+https://github.com/martinfleis/geopandas-view.git
 git+https://github.com/knaaptime/geosnap.git@segdyn  # should get my segdyn branch, which has the new code
