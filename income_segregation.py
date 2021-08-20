@@ -17,7 +17,7 @@ from geosnap import io
 from geosnap._data import data_dir
 
 # get 
-if not os.path.exists(data_dir):
+if not os.path.exists(data_dir+"/acs/"):
     io.store_acs()
 
 
