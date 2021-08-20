@@ -1,2 +1,3 @@
 build-essential
 libgeos-dev
+libgdal-dev
