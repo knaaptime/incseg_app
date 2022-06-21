@@ -12,7 +12,7 @@ from streamlit_folium import folium_static
 from geosnap import datasets
 from geosnap.analyze import segdyn
 from geosnap.io.storage import _fips_filter
-from income_segregation import gen_multi, gen_single, generate_delta_text
+from incseg.income_segregation import gen_multi, gen_single, generate_delta_text
 from incseg.income_segregation import generate_delta_text, get_delta, plot_all_single
 from bokeh.plotting import figure
 from bokeh.io import show
@@ -29,10 +29,10 @@ st.set_page_config(
 
 @st.cache
 def get_text():
-    intro = Path("intro.md").read_text()
-    dimension_text = Path("dimension_text.md").read_text()
-    multiscalar_pre = Path("multiscalar_pre.md").read_text()
-    multistalar_post = Path("multiscalar_post.md").read_text()
+    intro = Path("incseg/intro.md").read_text()
+    dimension_text = Path("incseg/dimension_text.md").read_text()
+    multiscalar_pre = Path("incseg/multiscalar_pre.md").read_text()
+    multistalar_post = Path("incseg/multiscalar_post.md").read_text()
     return intro, dimension_text, multiscalar_pre, multistalar_post
 
 
@@ -50,7 +50,7 @@ header_col1, header_col2 = st.columns(2)
 
 @st.cache
 def get_multi_data(fips):
-    df = gpd.read_parquet(f"../data/{fips}/{fips}_income_data.parquet")
+    df = gpd.read_parquet(f"data/{fips}/{fips}_income_data.parquet")
     cols = ["very_low_inc", "low_inc", "med_inc", "high_inc", "very_high_inc"]
     multi_by_time = segdyn.multigroup_tempdyn(df, cols,)
     return multi_by_time
@@ -117,14 +117,14 @@ with header_col2:
     st.empty()
 
 segs_single = pd.read_parquet(
-    f"../data/{fips}/{fips}_singlegroup_{income_group}.parquet"
+    f"data/{fips}/{fips}_singlegroup_{income_group}.parquet"
 ).T
 
 
 @st.cache
 def get_profile_data(fips, profile_idx):
-    spacetime_path = f"../data/{fips}/{fips}_spacetime_{profile_idx}_high.parquet"
-    spacetime_path2 = f"../data/{fips}/{fips}_spacetime_{profile_idx}_low.parquet"
+    spacetime_path = f"data/{fips}/{fips}_spacetime_{profile_idx}_high.parquet"
+    spacetime_path2 = f"data/{fips}/{fips}_spacetime_{profile_idx}_low.parquet"
 
     multi1 = pd.read_parquet(spacetime_path).reset_index()
     multi1 = pd.melt(multi1, id_vars=["distance"])
