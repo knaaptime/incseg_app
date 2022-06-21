@@ -1,0 +1,11 @@
+LICENSE
+README.md
+setup.py
+incseg/__init__.py
+incseg/app.py
+incseg/income_segregation.py
+incseg/util.py
+incseg.egg-info/PKG-INFO
+incseg.egg-info/SOURCES.txt
+incseg.egg-info/dependency_links.txt
+incseg.egg-info/top_level.txt

@@ -19,11 +19,11 @@ dependencies:
   - black
   - gh
   - streamlit
-  - streamlit-folium
   - pip
   - pip:
     - pandoc-include                 # necessary to compile the paper
     - pandoc-latex-admonition        # necessary to compile the paper
     - stargazer
     - folium >=0.12
-    - bokeh=2.4.1
+    - bokeh==2.4.1
+    - streamlit_folium
