@@ -26,4 +26,5 @@ dependencies:
     - stargazer
     - folium >=0.12
     - bokeh==2.4.1
-    - streamlit_folium
+    - streamlit-folium
+    - .  # install `incseg` package from cwd
