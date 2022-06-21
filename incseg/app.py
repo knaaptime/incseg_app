@@ -7,7 +7,6 @@ import hvplot.pandas
 import numpy as np
 import pandas as pd
 import streamlit as st
-from geopandas_view import view
 from streamlit_folium import folium_static
 
 from geosnap import datasets
@@ -17,6 +16,7 @@ from income_segregation import gen_multi, gen_single, generate_delta_text
 from incseg.income_segregation import generate_delta_text, get_delta, plot_all_single
 from bokeh.plotting import figure
 from bokeh.io import show
+import geopandas as gpd
 
 toner_lite = ctx.providers.Stamen.TonerLite
 
@@ -50,7 +50,7 @@ header_col1, header_col2 = st.columns(2)
 
 @st.cache
 def get_multi_data(fips):
-    df = pd.read_parquet(f"data/{fips}/{fips}_income_data.parquet")
+    df = gpd.read_parquet(f"../data/{fips}/{fips}_income_data.parquet")
     cols = ["very_low_inc", "low_inc", "med_inc", "high_inc", "very_high_inc"]
     multi_by_time = segdyn.multigroup_tempdyn(df, cols,)
     return multi_by_time
@@ -97,7 +97,7 @@ should be treated as rolling averages
 )
 st.sidebar.write("  ")
 st.sidebar.caption(
-    "Powered by [`geosnap`](https://github.com/spatialucr/geosnap) and the PySAL [`segregation`](https://github.com/pysal/segregation) package. Built by [@knaaptime](https://knaaptime.com)"
+    "Powered by [`geosnap`](https://github.com/spatialucr/geosnap) and the PySAL [`segregation`](https://github.com/pysal/segregation) package. Built by [@knaaptime](https://twitter.com/knaaptime)"
 )
 st.sidebar.write("  ")
 st.sidebar.image(
@@ -117,14 +117,14 @@ with header_col2:
     st.empty()
 
 segs_single = pd.read_parquet(
-    f"data/{fips}/{fips}_singlegroup_{income_group}.parquet"
+    f"../data/{fips}/{fips}_singlegroup_{income_group}.parquet"
 ).T
 
 
 @st.cache
 def get_profile_data(fips, profile_idx):
-    spacetime_path = f"data/{fips}/{fips}_spacetime_{profile_idx}_high.parquet"
-    spacetime_path2 = f"data/{fips}/{fips}_spacetime_{profile_idx}_low.parquet"
+    spacetime_path = f"../data/{fips}/{fips}_spacetime_{profile_idx}_high.parquet"
+    spacetime_path2 = f"../data/{fips}/{fips}_spacetime_{profile_idx}_low.parquet"
 
     multi1 = pd.read_parquet(spacetime_path).reset_index()
     multi1 = pd.melt(multi1, id_vars=["distance"])
@@ -138,8 +138,7 @@ def get_profile_data(fips, profile_idx):
 
 
 def generate_map(df):
-    m = view(
-        df,
+    m = df.explore(
         "median_household_income",
         scheme="quantiles",
         k=5,
@@ -224,6 +223,8 @@ with multi_plots:
 - \>$125,000
 
 See additional notes in app details at the top.
+
+For more information on the calculation and interpretation of each index, see the [multi-group API docs](https://pysal.org/segregation/api.html#multigroup-indices) for the PySAL `segregation` package
 """
         )
 
@@ -240,7 +241,11 @@ with singlegroup_table:
     st.markdown(f"#### For {income_group.title()} Income Households")
 with singlegroup_plot:
     with st.expander("Details"):
-        st.markdown('Singlegroup indices focus on the top (high) and bottom (low) quintiles of the income groups described above. Use the dropdown selector in the sidebar to toggle between income groups')
+        st.markdown('''
+Singlegroup indices focus on the top (high) and bottom (low) quintiles of the income groups described above. Use the dropdown selector in the sidebar to toggle between income groups. 
+
+For more information on the calculation and interpretation of each index, see the [single-group API docs](https://pysal.org/segregation/api.html#multi-group-indices) for the PySAL `segregation` package
+''')
 
 
 first_col2,first_col1 = st.columns(2)

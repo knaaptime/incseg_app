@@ -12,15 +12,6 @@ from libpysal.weights import Queen
 from geosnap import datasets
 from geosnap.analyze import segdyn
 from segregation import singlegroup
-from geosnap import datasets
-from geosnap import io
-from geosnap._data import data_dir
-
-# get 
-io.store_census()
-if not os.path.exists(data_dir+"/acs/"):
-    io.store_acs()
-
 
 msas = datasets.msa_definitions()
 bgs = datasets.acs(year=2018, level="bg")[["geoid", "geometry"]]
@@ -63,7 +54,7 @@ def generate_dataset(msa_fips):
     dfs = []
 
     for year in range(2012, 2019):
-        df = pd.read_parquet(f"data/acs/acs_{year}_X19_INCOME_bg.parquet")
+        df = pd.read_parquet(f"../data/acs/acs_{year}_X19_INCOME_bg.parquet")
         df["geoid"] = df.reset_index().GEOID.str[7:].values
         df = df[
             df.geoid.str[:5].isin(msas[msas["CBSA Code"] == msa_fips].stcofips.unique())
@@ -80,17 +71,17 @@ def generate_dataset(msa_fips):
 
 def store_data(msa):
     # only create the data if the msa directory is absent
-    if not os.path.exists(f"data/{msa}/"):
-        os.mkdir(f"data/{msa}/")
+    if not os.path.exists(f"../data/{msa}/"):
+        os.mkdir(f"../data/{msa}/")
         df = generate_dataset(msa)
-        df.to_parquet(f"data/{msa}/{msa}_income_data.parquet")
+        df.to_parquet(f"../data/{msa}/{msa}_income_data.parquet")
         try:
             # some metros will fail, like PR where we don't have data, or places with islands
             calc_indices(df, msa)
         except Exception as e:
             print(f"{msa} failed with {e}")
             # trash the entire metro folder if something fails
-            shutil.rmtree(f"data/{msa}/")
+            shutil.rmtree(f"../data/{msa}/")
     else:
         pass
 
@@ -100,8 +91,8 @@ def store_data_w_islands(msa):
     # so this function pulls out the largest component and treats that as the region
 
     # only create the data if the msa directory is absent
-    if not os.path.exists(f"data/{msa}/"):
-        os.mkdir(f"data/{msa}/")
+    if not os.path.exists(f"../data/{msa}/"):
+        os.mkdir(f"../data/{msa}/")
         df = generate_dataset(msa)
         w = Queen.from_dataframe(df)
         df["labels"] = w.component_labels
@@ -109,14 +100,14 @@ def store_data_w_islands(msa):
             df.groupby("labels").size().sort_values(ascending=False).index[0]
         )
         df = df[df.labels == largest_component]
-        df.to_parquet(f"data/{msa}/{msa}_income_data.parquet")
+        df.to_parquet(f"../data/{msa}/{msa}_income_data.parquet")
         try:
             # some metros will fail, like PR where we don't have data
             calc_indices(df, msa)
         except Exception as e:
             print(f"{msa} failed with {e}")
             # trash the entire metro folder if something fails
-            shutil.rmtree(f"data/{msa}/")
+            shutil.rmtree(f"../data/{msa}/")
     else:
         pass
 
@@ -124,18 +115,18 @@ def store_data_w_islands(msa):
 def calc_indices(df, msa):
 
     multi_by_time = segdyn.multigroup_tempdyn(df, cols)
-    multi_by_time.T.to_parquet(f"data/{msa}/{msa}_multigroup.parquet")
+    multi_by_time.T.to_parquet(f"../data/{msa}/{msa}_multigroup.parquet")
 
     # very high income
     single_by_time_vhi = segdyn.singlegroup_tempdyn(
         df, group_pop_var="very_high_inc", total_pop_var="total",
     )
-    single_by_time_vhi.T.to_parquet(f"data/{msa}/{msa}_singlegroup_high.parquet")
+    single_by_time_vhi.T.to_parquet(f"../data/{msa}/{msa}_singlegroup_high.parquet")
     # very low income
     single_by_time_vlo = segdyn.singlegroup_tempdyn(
         df, group_pop_var="very_low_inc", total_pop_var="total",
     )
-    single_by_time_vlo.T.to_parquet(f"data/{msa}/{msa}_singlegroup_low.parquet")
+    single_by_time_vlo.T.to_parquet(f"../data/{msa}/{msa}_singlegroup_low.parquet")
 
     # very high income
     spacetime_d_hi = segdyn.spacetime_dyn(
@@ -146,7 +137,7 @@ def calc_indices(df, msa):
         distances=list(range(500, 5500, 500)),
     )
     spacetime_d_hi.columns = spacetime_d_hi.columns.values.astype(str)
-    spacetime_d_hi.to_parquet(f"data/{msa}/{msa}_spacetime_entropy_high.parquet")
+    spacetime_d_hi.to_parquet(f"../data/{msa}/{msa}_spacetime_entropy_high.parquet")
     # very low income
     spacetime_d_lo = segdyn.spacetime_dyn(
         df,
@@ -156,7 +147,7 @@ def calc_indices(df, msa):
         distances=list(range(500, 5500, 500)),
     )
     spacetime_d_lo.columns = spacetime_d_lo.columns.values.astype(str)
-    spacetime_d_lo.to_parquet(f"data/{msa}/{msa}_spacetime_entropy_low.parquet")
+    spacetime_d_lo.to_parquet(f"../data/{msa}/{msa}_spacetime_entropy_low.parquet")
 
     # very high income
     spacetime_i_hi = segdyn.spacetime_dyn(
@@ -167,7 +158,7 @@ def calc_indices(df, msa):
         distances=list(range(500, 5500, 500)),
     )
     spacetime_i_hi.columns = spacetime_i_hi.columns.values.astype(str)
-    spacetime_i_hi.to_parquet(f"data/{msa}/{msa}_spacetime_isolation_high.parquet")
+    spacetime_i_hi.to_parquet(f"../data/{msa}/{msa}_spacetime_isolation_high.parquet")
     # very low income
     spacetime_i_lo = segdyn.spacetime_dyn(
         df,
@@ -177,7 +168,7 @@ def calc_indices(df, msa):
         distances=list(range(500, 5500, 500)),
     )
     spacetime_i_lo.columns = spacetime_i_lo.columns.values.astype(str)
-    spacetime_i_lo.to_parquet(f"data/{msa}/{msa}_spacetime_isolation_low.parquet")
+    spacetime_i_lo.to_parquet(f"../data/{msa}/{msa}_spacetime_isolation_low.parquet")
 
 
 def plot_trend_graphs(group, msa_name, msa_fips, dpi=300):
@@ -186,7 +177,7 @@ def plot_trend_graphs(group, msa_name, msa_fips, dpi=300):
         os.makedirs(path)
         try:
             df = pd.read_parquet(
-                f"data/{msa_fips}/{msa_fips}_singlegroup_high.parquet"
+                f"../data/{msa_fips}/{msa_fips}_singlegroup_high.parquet"
             )
             for i, row in df.T.iterrows():
 
@@ -268,8 +259,8 @@ def fmtr(x, pos):
 
 
 def gen_multi_fig(fips, profile_idx):
-    df1 = pd.read_parquet(f"data/{fips}/{fips}_spacetime_{profile_idx}_high.parquet")
-    df2 = pd.read_parquet(f"data/{fips}/{fips}_spacetime_{profile_idx}_low.parquet")
+    df1 = pd.read_parquet(f"../data/{fips}/{fips}_spacetime_{profile_idx}_high.parquet")
+    df2 = pd.read_parquet(f"../data/{fips}/{fips}_spacetime_{profile_idx}_low.parquet")
 
     for idx in ["entropy", "isolation"]:
         fig, ax = pplt.subplots(axpad=0.45)

@@ -1,0 +1,29 @@
+name: incseg
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3
+  - jupyter                         # necessary to run notebooks
+  - jupyterlab                      # necessary to run notebooks
+  - pandas >=1.0                    # generate markdown tables
+  - tabulate                        # generate markdown tables
+  - tectonic                        # necessary to compile the paper
+  - watermark                       # add metadata to notebooks
+  - seaborn                         # requirement of stargazer and we want from conda not pip
+  - geosnap                         # NOTE: need current dev version of geosnap, this is just to install deps from conda
+  - segregation >=2.1
+  - hvplot
+  - ipython
+  - isort
+  - black
+  - gh
+  - streamlit
+  - streamlit-folium
+  - pip
+  - pip:
+    - pandoc-include                 # necessary to compile the paper
+    - pandoc-latex-admonition        # necessary to compile the paper
+    - stargazer
+    - folium >=0.12
+    - bokeh=2.4.1
